@@ -113,6 +113,7 @@
         }
 
         .phonebtn {
+            font-size: 12px;
             background-color: darkgreen;
             border-radius: 5%;
             padding: 4px;
@@ -120,11 +121,33 @@
             text-decoration: none;
             position: absolute;
             right: 8px;
-            bottom: 8px;
+            top: 3px;
         }
 
         .phonebtn:hover {
-            background-color: green;
+            color: black;
+            background-color: #7CFC00;
+            transform: scale(1.1);
+            transition: transform 0.2s ease-in-out;
+        }
+
+        .deletebtn {
+            font-size: 10px;
+            background-color: darkred;
+            border-radius: 5%;
+            padding: 4px;
+            color: white;
+            text-decoration: none;
+            position: absolute;
+            right: 8px;
+            bottom: 3px;
+        }
+
+        .deletebtn:hover {
+            color: black;
+            background-color: red; 
+            transform: scale(1.1);
+            transition: transform 0.2s ease-in-out;          
         }
 
     </style>
@@ -167,6 +190,10 @@
                 file_put_contents('contacts.txt', json_encode($contacts, JSON_PRETTY_PRINT));
             }
 
+            # Löschen von Kontakten
+            if($_GET['page'] == 'delete') {
+                $headline = 'Kontakt gelöscht';
+            }
 
             if($_GET['page'] == 'contacts') {
                 $headline = 'Deine Kontakte';
@@ -182,23 +209,36 @@
 
             echo '<h1>' . $headline . '</h1>';
 
+            if ($_GET['page'] == 'delete') {
+                echo '<p>Dein Kontakt wurde gelöscht</p>';
 
-            if($_GET['page'] == 'contacts') {
+                # Wir laden die Nummer der Reihe aus den URL Parametern
+                $index = $_GET['delete'];
+
+                # wir löschen die Stelle aus dem Array
+                unset($contacts[$index]);
+
+                # Tabelle erneut speichern in Datei contacts.txt
+                file_put_contents('contacts.txt', json_encode($contacts, JSON_PRETTY_PRINT));
+
+            } else if($_GET['page'] == 'contacts') {
 
                 echo "
                     <p>Auf dieser Seite hast Du einen Überblick über Deine <b>Kontakte</b></p>
                 ";
 
-                foreach ($contacts as $row) {
+                foreach ($contacts as $index=>$row) {
                     $name = $row['name'];
                     $phone = $row['phone'];
+
                     echo "
                     <div class='card'>
                         <img class='profile-picture' src='img/profile-picture.png'>
                         <b>$name</b><br>
                         $phone
 
-                        <a class='phonebtn' href='tel:$phone'>Anrufen</a>
+                        <a class='phonebtn' href='tel:$phone'>Anrufen</a> 
+                        <a class='deletebtn' href='?page=delete&delete=$index'>Löschen</a>
                     </div>
                     ";
                 }
