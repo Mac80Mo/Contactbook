@@ -334,7 +334,32 @@ HTML;
             } elseif ($page === 'legal') {
                 echo "<h1>Impressum</h1><p>Hier steht das Impressum.</p>";
             } else {
-                echo "<h1>Willkommen</h1><p>Dies ist die Startseite!</p>";
+                echo "<h1>Willkommen zu deinem digitalen Kontaktbuch!</h1>
+        <p>Hier kannst du deine Kontakte einfach und übersichtlich verwalten. Die Funktionen umfassen:</p>
+        <ul>
+            <li><b>Startseite:</b> 
+                <ul>
+                    <li>Begrüßung und Erklärung der Funktionen.</li>
+                </ul><br>
+            <li><b>Login/Logout:</b> 
+                <ul>
+                    <li>Einloggen, um auf geschützte Funktionen zuzugreifen.</li>
+                    <li>Nach dem Logout sind alle Rechte entzogen, erneutes Einloggen ist jederzeit möglich.</li>
+                </ul><br>
+            </li>
+            <li><b>Kontakte verwalten:</b> 
+                <ul>
+                    <li><b>Kontakte anzeigen:</b> Einsicht in eine Liste deiner gespeicherten Kontakte.</li>
+                    <li><b>Kontakte hinzufügen:</b> Möglichkeit, neue Kontakte mit Namen und Telefonnummer zu speichern.</li>
+                    <li><b>Kontakte löschen:</b> Entferne Kontakte, die nicht mehr benötigt werden.</li>
+                </ul><br>
+            </li>
+            <li><b>Zugriffsbeschränkung:</b>
+                <ul>
+                    <li>Ohne Login kannst du keine geschützten Funktionen nutzen. Stattdessen erhältst du eine Meldung, dich einzuloggen.</li>
+                </ul><br>
+        </ul>
+        <p>Viel Spaß bei der Nutzung deines digitalen Kontaktbuchs!</p>";
             }
         ?>
         </div>
