@@ -2,8 +2,8 @@
 session_start();
 
 // Zugangsdaten für Benutzer
-$validUsername = "Marcus";
-$validPassword = "Passwort";
+$validUsername = "user";
+$validPassword = "password";
 
 // Login-Überprüfung
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username'], $_POST['password'])) {
@@ -28,7 +28,43 @@ if (isset($_GET['logout'])) {
     header('Location: index.php?page=start'); // Weiterleitung zur Startseite
     exit;
 }
+
+// meine Variablen bezüglich Text
+$needLogin = "Fehlende Berechtigung für diesen Bereich.<br>
+                <br>
+                Bitte geben Sie im  Menü unter dem Punkt <b>Einloggen</b> Ihre Nutzerdaten ein um vollen Zugriff zu erhalten."
+              
+
 ?>
+
+<?php
+$startseite = <<<HTML
+<div class="content">
+    <h1>Willkommen zu deinem digitalen Kontaktbuch!</h1>
+    <p>Hier kannst du deine Kontakte einfach und übersichtlich verwalten. Die Funktionen umfassen:</p>
+    <ul>
+        <li><b>Startseite:</b> Begrüßung und Erklärung der Funktionen.</li>
+        <li><b>Login/Logout:</b> 
+            <ul>
+                <li>Einloggen, um auf geschützte Funktionen zuzugreifen.</li>
+                <li>Nach dem Logout sind alle Rechte entzogen, erneutes Einloggen ist jederzeit möglich.</li>
+            </ul>
+        </li>
+        <li><b>Kontakte verwalten:</b> 
+            <ul>
+                <li><b>Kontakte anzeigen:</b> Einsicht in eine Liste deiner gespeicherten Kontakte.</li>
+                <li><b>Kontakte hinzufügen:</b> Möglichkeit, neue Kontakte mit Namen und Telefonnummer zu speichern.</li>
+                <li><b>Kontakte löschen:</b> Entferne Kontakte, die nicht mehr benötigt werden.</li>
+            </ul>
+        </li>
+        <li><b>Zugriffsbeschränkung:</b> Ohne Login kannst du keine geschützten Funktionen nutzen. Stattdessen erhältst du eine Meldung, dich einzuloggen.</li>
+    </ul>
+    <p>Viel Spaß bei der Nutzung deines digitalen Kontaktbuchs!</p>
+</div>
+HTML;
+?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -256,15 +292,15 @@ if (isset($_GET['logout'])) {
                 }
                 echo "
                 <form method='POST'>
-                    <input type='text' name='username' placeholder='Benutzername eingeben:' required>
-                    <input type='password' name='password' placeholder='Passwort eingeben:' required>
+                    <input type='text' name='username' placeholder='Benutzername eingeben: user' required>
+                    <input type='password' name='password' placeholder='Passwort eingeben: password' required>
                     <button type='submit'>Einloggen</button>
                 </form>";
 
             } elseif ($page === 'contacts') {
                 echo "<h1>Deine Kontakte</h1>";
                 if (!$isLoggedIn) {
-                    echo "<p>Bitte logge dich ein, um deine Kontakte zu sehen.</p>";
+                    echo "<p>$needLogin</p>";
                 } else {
                     foreach ($contacts as $index => $contact) {
                         $name = htmlspecialchars($contact['name']);
@@ -282,7 +318,7 @@ if (isset($_GET['logout'])) {
             } elseif ($page === 'addcontact') {
                 echo "<h1>Kontakt hinzufügen</h1>";
                 if (!$isLoggedIn) {
-                    echo "<p>Bitte logge dich ein, um Kontakte hinzuzufügen.</p>";
+                    echo "<p>$needLogin</p>";
                 } else {
                     echo "
                     <form method='POST' action='index.php?page=contacts'>
