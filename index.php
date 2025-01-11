@@ -139,10 +139,10 @@ HTML;
         }
 
         .avatar {
-            color: #343434;
+            color: white;
             font-size: 20px;
             border-radius: 100%;
-            background-color: #EAEDF8;
+            background-color: navy;
             padding: 16px;
             width: 24px;
             height: 24px;
