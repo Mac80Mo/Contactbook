@@ -3,6 +3,9 @@ This is a contact management site based on php. Just for me as I am developing m
 The basic setup I learned from a video-tutorial by JunusErgin / Programmieren lernen.
 Link: https://www.youtube.com/watch?v=ZTz1qKoFsHo
 
+For this project I use XAMPP / Apache | Localhost:
+so you need to put the files in the htdocs folder (create a seperate folder in htdocs) to run on your localhost.
+
 It works! But now I want to develope it quite a little more, with some more features..
 
 Done:
