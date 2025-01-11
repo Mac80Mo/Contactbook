@@ -175,41 +175,46 @@
             $headline = 'Herzlich willkommen';
             $contacts = [];
 
+            // Kontakte aus der Datei laden 
             if(file_exists('contacts.txt')) {
                 $text = file_get_contents('contacts.txt', true);
                 $contacts = json_decode($text, true);
             }
 
+            // Kontakte hinzufügen
             if(isset($_POST['name']) && isset($_POST['phone'])) {
                 echo 'Kontakt <b>' . $_POST['name'] . '</b> wurde hinzugefügt';
                 $newContact = [
-                    'name' => $_POST['name'],
-                    'phone' => $_POST['phone']
+                    'name' => htmlspecialchars($_POST['name']),
+                    'phone' => htmlspecialchars($_POST['phone'])
                 ];
                 array_push($contacts, $newContact);
                 file_put_contents('contacts.txt', json_encode($contacts, JSON_PRETTY_PRINT));
             }
 
+            // Standartwert für 'page', falls Parameter nicht existiert => start
+            $page = $_GET['page'] ?? 'start'; 
+
             # Löschen von Kontakten
-            if($_GET['page'] == 'delete') {
+            if($page === 'delete') {
                 $headline = 'Kontakt gelöscht';
             }
 
-            if($_GET['page'] == 'contacts') {
+            if($page === 'contacts') {
                 $headline = 'Deine Kontakte';
             }
 
-            if($_GET['page'] == 'legal') {
+            if($page === 'legal') {
                 $headline = 'Impressum';
             }
 
-            if($_GET['page'] == 'addcontact') {
+            if($page === 'addcontact') {
                 $headline = 'Kontakt hinzufügen';
             }
 
             echo '<h1>' . $headline . '</h1>';
 
-            if ($_GET['page'] == 'delete') {
+            if ($page === 'delete') {
                 echo '<p>Dein Kontakt wurde gelöscht</p>';
 
                 # Wir laden die Nummer der Reihe aus den URL Parametern
@@ -221,15 +226,15 @@
                 # Tabelle erneut speichern in Datei contacts.txt
                 file_put_contents('contacts.txt', json_encode($contacts, JSON_PRETTY_PRINT));
 
-            } else if($_GET['page'] == 'contacts') {
+            } else if($page === 'contacts') {
 
                 echo "
                     <p>Auf dieser Seite hast Du einen Überblick über Deine <b>Kontakte</b></p>
                 ";
 
                 foreach ($contacts as $index=>$row) {
-                    $name = $row['name'];
-                    $phone = $row['phone'];
+                    $name = htmlspecialchars($row['name']);
+                    $phone = htmlspecialchars($row['phone']);
 
                     echo "
                     <div class='card'>
@@ -243,13 +248,13 @@
                     ";
                 }
 
-            } else if($_GET['page'] == 'legal') {
+            } else if($page === 'legal') {
 
                 echo "
                     <p>Hier kommt das <b>Impressum</b> hin.</p>
                 ";
 
-            } else if($_GET['page'] == 'addcontact') {
+            } else if($page === 'addcontact') {
 
                 echo "
                 <div>
