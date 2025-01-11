@@ -1,3 +1,34 @@
+<?php
+session_start();
+
+// Zugangsdaten für Benutzer
+$validUsername = "Marcus";
+$validPassword = "Passwort";
+
+// Login-Überprüfung
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username'], $_POST['password'])) {
+    $username = $_POST['username'];
+    $password = $_POST['password'];
+
+    if ($username === $validUsername && $password === $validPassword) {
+        $_SESSION['logged_in'] = true; // Benutzer ist eingeloggt
+        header('Location: index.php?page=start'); // Weiterleitung zur Startseite
+        exit;
+    } else {
+        $loginError = "Benutzername oder Passwort ist falsch!";
+    }
+}
+
+// Prüfen, ob Benutzer eingeloggt ist
+$isLoggedIn = $_SESSION['logged_in'] ?? false;
+
+// Logout-Logik
+if (isset($_GET['logout'])) {
+    session_destroy();
+    header('Location: index.php?page=start'); // Weiterleitung zur Startseite
+    exit;
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -90,7 +121,6 @@
             display: flex;
             margin-right: 50px;
             align-items: center;
-            
         }
 
         .card {
@@ -100,7 +130,6 @@
             padding: 8px;
             padding-left: 64px;
             position: relative;
-
         }
 
         .profile-picture {
@@ -150,13 +179,45 @@
             transition: transform 0.2s ease-in-out;          
         }
 
-    </style>
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            padding: 16px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-top: 16px;
+        }
 
+        form input {
+            padding: 8px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: 100%;
+        }
+
+        form button {
+            padding: 8px 16px;
+            font-size: 16px;
+            color: white;
+            background-color: navy;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        form button:hover {
+            background-color: blue;
+        }
+
+    </style>
 </head>
 <body>
     <div class="menubar">
         <h1>Mein Kontakt-Buch</h1>
-
         <div class="myname">
             <div class="avatar"><h2>M</h2></div><h3>Marcus Moser</h3>
         </div>
@@ -164,7 +225,13 @@
 
     <div class="main">
         <div class="menu">
+            <!-- Menüpunkte -->
             <a href="index.php?page=start"><img src="img/home.svg">Start</a>
+            <?php if ($isLoggedIn): ?>
+                <a href="index.php?logout=true"><img src="img/logout.svg">Ausloggen</a>
+            <?php else: ?>
+                <a href="index.php?page=login"><img src="img/login.svg">Einloggen</a>
+            <?php endif; ?>
             <a href="index.php?page=contacts"><img src="img/book.svg">Kontakte</a>
             <a href="index.php?page=addcontact"><img src="img/add.svg">Kontakt hinzufügen</a>
             <a href="index.php?page=legal"><img src="img/legal.svg">Impressum</a>
@@ -172,122 +239,73 @@
 
         <div class="content">
         <?php
-            $headline = 'Herzlich willkommen';
+            $page = $_GET['page'] ?? 'start'; // Standard-Seite ist Startseite
             $contacts = [];
 
-            // Kontakte aus der Datei laden 
-            if(file_exists('contacts.txt')) {
+            // Kontakte aus der Datei laden
+            if (file_exists('contacts.txt')) {
                 $text = file_get_contents('contacts.txt', true);
                 $contacts = json_decode($text, true);
             }
 
-            // Kontakte hinzufügen
-            if(isset($_POST['name']) && isset($_POST['phone'])) {
-                echo 'Kontakt <b>' . $_POST['name'] . '</b> wurde hinzugefügt';
-                $newContact = [
-                    'name' => htmlspecialchars($_POST['name']),
-                    'phone' => htmlspecialchars($_POST['phone'])
-                ];
-                array_push($contacts, $newContact);
-                file_put_contents('contacts.txt', json_encode($contacts, JSON_PRETTY_PRINT));
-            }
-
-            // Standartwert für 'page', falls Parameter nicht existiert => start
-            $page = $_GET['page'] ?? 'start'; 
-
-            # Löschen von Kontakten
-            if($page === 'delete') {
-                $headline = 'Kontakt gelöscht';
-            }
-
-            if($page === 'contacts') {
-                $headline = 'Deine Kontakte';
-            }
-
-            if($page === 'legal') {
-                $headline = 'Impressum';
-            }
-
-            if($page === 'addcontact') {
-                $headline = 'Kontakt hinzufügen';
-            }
-
-            echo '<h1>' . $headline . '</h1>';
-
-            if ($page === 'delete') {
-                echo '<p>Dein Kontakt wurde gelöscht</p>';
-
-                # Wir laden die Nummer der Reihe aus den URL Parametern
-                $index = $_GET['delete'];
-
-                # wir löschen die Stelle aus dem Array
-                unset($contacts[$index]);
-
-                # Tabelle erneut speichern in Datei contacts.txt
-                file_put_contents('contacts.txt', json_encode($contacts, JSON_PRETTY_PRINT));
-
-            } else if($page === 'contacts') {
-
-                echo "
-                    <p>Auf dieser Seite hast Du einen Überblick über Deine <b>Kontakte</b></p>
-                ";
-
-                foreach ($contacts as $index=>$row) {
-                    $name = htmlspecialchars($row['name']);
-                    $phone = htmlspecialchars($row['phone']);
-
-                    echo "
-                    <div class='card'>
-                        <img class='profile-picture' src='img/profile-picture.png'>
-                        <b>$name</b><br>
-                        $phone
-
-                        <a class='phonebtn' href='tel:$phone'>Anrufen</a> 
-                        <a class='deletebtn' href='?page=delete&delete=$index'>Löschen</a>
-                    </div>
-                    ";
+            if ($page === 'login') {
+                // Login-Formular anzeigen
+                echo "<h1>Login</h1>";
+                if (isset($loginError)) {
+                    echo "<p style='color: red;'>$loginError</p>";
                 }
-
-            } else if($page === 'legal') {
-
                 echo "
-                    <p>Hier kommt das <b>Impressum</b> hin.</p>
-                ";
+                <form method='POST'>
+                    <input type='text' name='username' placeholder='Benutzername eingeben:' required>
+                    <input type='password' name='password' placeholder='Passwort eingeben:' required>
+                    <button type='submit'>Einloggen</button>
+                </form>";
 
-            } else if($page === 'addcontact') {
-
-                echo "
-                <div>
-                    Auf dieser Seite kannst Du weitere Kontakte hinzufügen.
-                </div>
-                
-                <form action='?page=contacts' method='POST'>
-                    <div>
-                        <input placeholder='Namen eingeben:' name='name'>
-                    </div>
-
-                    <div>
-                        <input placeholder='Telefonnummer eingeben:' name='phone'>
-                    </div>
-
-                    <button type='submit'>Absenden</button>
-                </form>
-                ";
-
+            } elseif ($page === 'contacts') {
+                echo "<h1>Deine Kontakte</h1>";
+                if (!$isLoggedIn) {
+                    echo "<p>Bitte logge dich ein, um deine Kontakte zu sehen.</p>";
+                } else {
+                    foreach ($contacts as $index => $contact) {
+                        $name = htmlspecialchars($contact['name']);
+                        $phone = htmlspecialchars($contact['phone']);
+                        echo "
+                        <div class='card'>
+                            <img class='profile-picture' src='img/profile-picture.png'>
+                            <b>$name</b><br>
+                            $phone
+                            <a class='phonebtn' href='tel:$phone'>Anrufen</a> 
+                            <a class='deletebtn' href='index.php?page=delete&delete=$index'>Löschen</a>
+                        </div>";
+                    }
+                }
+            } elseif ($page === 'addcontact') {
+                echo "<h1>Kontakt hinzufügen</h1>";
+                if (!$isLoggedIn) {
+                    echo "<p>Bitte logge dich ein, um Kontakte hinzuzufügen.</p>";
+                } else {
+                    echo "
+                    <form method='POST' action='index.php?page=contacts'>
+                        <div>
+                            <input placeholder='Name eingeben:' name='name' required>
+                        </div>
+                        <div>
+                            <input placeholder='Telefonnummer eingeben:' name='phone' required>
+                        </div>
+                        <button type='submit'>Hinzufügen</button>
+                    </form>";
+                }
+            } elseif ($page === 'legal') {
+                echo "<h1>Impressum</h1><p>Hier steht das Impressum.</p>";
             } else {
-
-                echo '<p>Du bist auf der <b>Startseite</b>!</p>';
+                echo "<h1>Willkommen</h1><p>Dies ist die Startseite!</p>";
             }
         ?>
         </div>
     </div>
 
     <div class="footer">
-            (C) 2025 Marcus Moser
+    <img src="img/copyright.svg"> 2025 Marcus Moser
     </div>
-
-    
-
-
 </body>
 </html>
