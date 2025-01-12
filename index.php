@@ -64,6 +64,18 @@ $startseite = <<<HTML
 HTML;
 ?>
 
+<?php
+$impressum = "Vorname Nachname<br>
+                Strasse Hausnummer<br>
+                PLZ Ort<br>
+                <br>
+                Tel.:<br>
+                Fax.:<br>
+                eMail:<br>
+                <br>
+                Haftungsausschluss für Inhalte von Drittanbietern."
+?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -336,7 +348,7 @@ HTML;
                     </form>";
                 }
             } elseif ($page === 'legal') {
-                echo "<h1>Impressum</h1><p>Hier steht das Impressum.</p>";
+                echo "<h1>Impressum</h1><p>$impressum</p>";
             } else {
                 echo "<h1>Willkommen zu deinem digitalen Kontaktbuch!</h1>
         <p>Hier kannst du deine Kontakte einfach und übersichtlich verwalten. Die Funktionen umfassen:</p>
