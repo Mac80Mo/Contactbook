@@ -32,7 +32,7 @@ if (isset($_GET['logout'])) {
 // meine Variablen bezüglich Text
 $needLogin = "Fehlende Berechtigung für diesen Bereich.<br>
                 <br>
-                Bitte geben Sie im  Menü unter dem Punkt <b>Einloggen</b> Ihre Nutzerdaten ein um vollen Zugriff zu erhalten."
+                Bitte gebe im  Menü unter dem Punkt <b>Einloggen</b> Deine Nutzerdaten ein um vollen Zugriff zu erhalten."
               
 
 ?>
@@ -70,7 +70,7 @@ HTML;
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Marcus Moser</title>
+    <title>Kontaktbuch</title>
 
     <style>
         .menubar {
@@ -247,6 +247,10 @@ HTML;
 
         form button:hover {
             background-color: blue;
+        }
+
+        .textheader {
+            color: navy;
         }
 
     </style>
