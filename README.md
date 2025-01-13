@@ -1,34 +1,67 @@
-This is a contact management site based on php. Just for me as I am developing my php-skills at the moment.
+# Mein Kontaktbuch
 
-The basic setup I learned from a video-tutorial by JunusErgin / Programmieren lernen.
-Link: https://www.youtube.com/watch?v=ZTz1qKoFsHo
+Ein einfaches digitales Kontaktbuch, das es ermöglicht, Kontakte zu verwalten. Es bietet Funktionen wie Anmeldung, Kontaktanzeige, Hinzufügen und Löschen von Kontakten sowie grundlegende Zugriffsbeschränkungen.
 
-For this project I use XAMPP / Apache | Localhost:
-so you need to put the files in the htdocs folder (create a seperate folder in htdocs) to run on your localhost.
+## Funktionen
 
-The Input (contacts) are saved in a .txt-file / json-format (will be created when adding a contact).
+### 1. **Startseite**
+- Begrüßung der Nutzer.
+- Kurze Erklärung der Funktionen des Kontaktbuchs.
 
-It works! But now I want to develope it quite a little more, with some more features:
+### 2. **Login/Logout**
+- **Einloggen**: 
+  - Nutzer geben ihren Benutzernamen und ihr Passwort ein, um auf geschützte Bereiche zuzugreifen.
+  - Standard-Zugangsdaten:
+    - Benutzername: `user`
+    - Passwort: `password`
+- **Logout**: 
+  - Beendet die aktuelle Sitzung und entzieht alle Rechte.
+  - Nach dem Logout ist ein erneutes Einloggen jederzeit möglich.
 
---------------------------------------------------------------------------------------------------------------------
+### 3. **Kontakte verwalten**
+- **Kontakte anzeigen**:
+  - Zeigt eine Liste aller gespeicherten Kontakte an.
+  - Kontakte werden als Karten mit Namen und Telefonnummer dargestellt.
+  - Optionen für jeden Kontakt:
+    - **Anrufen**: Direktes Wählen der Telefonnummer.
+    - **Löschen**: Entfernt den Kontakt aus der Liste.
+- **Kontakte hinzufügen**:
+  - Möglichkeit, neue Kontakte hinzuzufügen.
+  - Eingabefelder für Name und Telefonnummer.
+  - Daten werden sicher (gegen XSS geschützt) verarbeitet und in einer Datei (`contacts.txt`) gespeichert.
+- **Kontakte löschen**:
+  - Entfernt einen ausgewählten Kontakt aus der Liste.
+  - Aktualisiert die gespeicherte Datei, um die Änderungen dauerhaft zu machen.
 
-Done:
+### 4. **Zugriffsbeschränkungen**
+- Geschützte Bereiche (z. B. Kontaktmanagement) sind nur nach erfolgreichem Login zugänglich.
+- Nicht eingeloggte Nutzer sehen stattdessen eine Meldung mit der Aufforderung, sich einzuloggen.
 
-- some css-styling to fit in for me.
+### 5. **Impressum**
+- Zeigt Kontaktinformationen des Verantwortlichen an, inklusive Haftungsausschluss.
 
-- like a login (visibility of some features only with the correct login)
-    11.01.2025: Done!
-        Made a login & logout function:
-            Implemented a Login / Logout -button in the "menu".
-            Without beeing logged-in you got the whole view but can't see contacts or add contacts.
-            With a Login you are able to see the contacts and add new ones.
-            The "username" and the "password" are set directly in the source-code and you can set them there..
+## Aufbau der Seiten
+- **index.php** steuert die gesamte Seitenlogik basierend auf dem `page`-Parameter.
+- Unterstützte Seiten:
+  - `start`: Startseite
+  - `login`: Login-Bereich
+  - `contacts`: Kontaktverwaltung
+  - `addcontact`: Hinzufügen von Kontakten
+  - `legal`: Impressum
 
---------------------------------------------------------------------------------------------------------------------
+## Sicherheit
+- Schutz vor Cross-Site-Scripting (XSS) durch Nutzung von `htmlspecialchars` für Nutzereingaben.
+- Sessions werden verwendet, um den Login-Status zu speichern.
 
-In progress:
+## Installation
+1. Stelle sicher, dass ein PHP-Server installiert ist.
+2. Kopiere die Dateien in den Dokumenten-Root deines Servers.
+3. Starte den Server und öffne die Anwendung über den Browser.
 
+## Verwendete Technologien
+- **PHP**: Logik und Session-Management.
+- **HTML/CSS**: Benutzeroberfläche.
+- **JSON**: Speicherung von Kontaktdaten.
 
-
-
-
+## Lizenz
+Diese Anwendung wurde erstellt von **Marcus Moser** und steht unter keinem speziellen Lizenzmodell. Änderungen sind erlaubt.
