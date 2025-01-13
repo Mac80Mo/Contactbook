@@ -1,5 +1,5 @@
 <?php
-session_start();
+session_start(); // Startet die Session für den Benutzer
 
 // Zugangsdaten für Benutzer
 $validUsername = "user";
@@ -10,8 +10,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username'], $_POST['p
     $username = $_POST['username'];
     $password = $_POST['password'];
 
+    // Überprüfung der Zugangsdaten
     if ($username === $validUsername && $password === $validPassword) {
-        $_SESSION['logged_in'] = true; // Benutzer ist eingeloggt
+        $_SESSION['logged_in'] = true; // Login-Status speichern
         header('Location: index.php?page=start'); // Weiterleitung zur Startseite
         exit;
     } else {
@@ -20,24 +21,66 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username'], $_POST['p
 }
 
 // Prüfen, ob Benutzer eingeloggt ist
-$isLoggedIn = $_SESSION['logged_in'] ?? false;
+$isLoggedIn = $_SESSION['logged_in'] ?? false; // Standardwert ist `false`
 
 // Logout-Logik
 if (isset($_GET['logout'])) {
-    session_destroy();
-    header('Location: index.php?page=start'); // Weiterleitung zur Startseite
+    session_destroy(); // Session beenden
+    header('Location: index.php?page=start'); // Zur Startseite weiterleiten
     exit;
 }
 
-// meine Variablen bezüglich Text
+// Meldung für nicht eingeloggte Benutzer
 $needLogin = "Fehlende Berechtigung für diesen Bereich.<br>
                 <br>
-                Bitte gebe im  Menü unter dem Punkt <b>Einloggen</b> Deine Nutzerdaten ein um vollen Zugriff zu erhalten."
-              
+                Bitte gebe im Menü unter dem Punkt <b>Einloggen</b> Deine Nutzerdaten ein, um vollen Zugriff zu erhalten.";
 
+// Standard-Seite ist Startseite
+$page = $_GET['page'] ?? 'start'; 
+
+// Kontakte initialisieren
+$contacts = [];
+if (file_exists('contacts.txt')) {
+    $contacts = json_decode(file_get_contents('contacts.txt'), true) ?: [];
+} else {
+    $contacts = []; // Leeres Array, wenn die Datei nicht existiert
+}
+
+// *** Fix: Kontakt hinzufügen ***
+if ($page === 'contacts' && $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['name'], $_POST['phone'])) {
+    $newContact = [
+        'name' => htmlspecialchars($_POST['name']), // Schutz vor XSS
+        'phone' => htmlspecialchars($_POST['phone']),
+    ];
+
+    // Kontakt zur Liste hinzufügen
+    $contacts[] = $newContact;
+    file_put_contents('contacts.txt', json_encode($contacts)); // Kontaktliste speichern
+
+    // Weiterleitung zur Kontaktseite, um doppeltes Absenden zu vermeiden
+    header('Location: index.php?page=contacts');
+    exit;
+}
+
+// *** Fix: Kontakt löschen ***
+if ($page === 'delete' && isset($_GET['delete'])) {
+    $indexToDelete = (int) $_GET['delete']; // Index des zu löschenden Kontakts
+
+    // Kontakt entfernen, falls der Index existiert
+    if (isset($contacts[$indexToDelete])) {
+        unset($contacts[$indexToDelete]); // Entfernt den Kontakt
+        $contacts = array_values($contacts); // Indizes neu ordnen
+        file_put_contents('contacts.txt', json_encode($contacts)); // Aktualisierte Liste speichern
+    }
+
+    // Weiterleitung zur Kontaktseite nach dem Löschen
+    header('Location: index.php?page=contacts');
+    exit;
+}
 ?>
 
 <?php
+// HTML-Inhalt für die Startseite
 $startseite = <<<HTML
 <div class="content">
     <h1>Willkommen zu deinem digitalen Kontaktbuch!</h1>
@@ -65,6 +108,7 @@ HTML;
 ?>
 
 <?php
+// HTML-Inhalt für das Impressum
 $impressum = "Vorname Nachname<br>
                 Strasse Hausnummer<br>
                 PLZ Ort<br>
@@ -75,197 +119,13 @@ $impressum = "Vorname Nachname<br>
                 <br>
                 Haftungsausschluss für Inhalte von Drittanbietern."
 ?>
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kontaktbuch</title>
-
-    <style>
-        .menubar {
-            color: white;
-            background-color: #343434;
-            position: absolute;
-            left: 0px;
-            right: 0px;
-            top: 0px;
-            height: 80px;
-            display: flex;
-            justify-content: space-between;
-            margin-left: 40px;
-        }
-
-        body {
-            font-family: "Arial";
-            background-color: #EAEDF8;
-            margin: 0px;
-        }
-
-        .main {
-            display: flex;
-        }
-
-        .menu {
-            width: 20%;
-            background-color: #343434;
-            margin-right: 32px;
-            padding-top: 150px;
-            height: 100vh;
-        }
-
-        .menu a {
-            display: block;
-            text-decoration: none;
-            color: white;
-            padding: 8px;
-            display: flex;
-            align-items: center;
-        }
-
-        .menu img {
-            margin-right: 8px;
-        }
-
-        .menu a:hover {
-            background-color: rgba(255, 255, 255, 0.1);
-        }
-
-        .content {
-            width: 80%;
-            margin-top: 100px;
-            margin-right: 32px;
-            background-color: white;
-            border-radius: 8px;
-            padding: 16px;
-        }
-
-        .footer {
-            padding: 100px;
-            text-align: center;
-            background-color: #343434;
-            color: white;
-            margin-top: 300px;
-        }
-
-        .avatar {
-            color: white;
-            font-size: 20px;
-            border-radius: 100%;
-            background-color: navy;
-            padding: 16px;
-            width: 24px;
-            height: 24px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-right: 8px;
-
-        }
-
-        .myname {
-            display: flex;
-            margin-right: 50px;
-            align-items: center;
-        }
-
-        .card {
-            background-color: rgba(0, 0, 0, 0.05);
-            margin-bottom: 16px;
-            border-radius: 8px;
-            padding: 8px;
-            padding-left: 64px;
-            position: relative;
-        }
-
-        .profile-picture {
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            border: 2px solid white;
-            position: absolute;
-            left: 8px;
-        }
-
-        .phonebtn {
-            font-size: 12px;
-            background-color: darkgreen;
-            border-radius: 5%;
-            padding: 4px;
-            color: white;
-            text-decoration: none;
-            position: absolute;
-            right: 8px;
-            top: 3px;
-        }
-
-        .phonebtn:hover {
-            color: black;
-            background-color: #7CFC00;
-            transform: scale(1.1);
-            transition: transform 0.2s ease-in-out;
-        }
-
-        .deletebtn {
-            font-size: 10px;
-            background-color: darkred;
-            border-radius: 5%;
-            padding: 4px;
-            color: white;
-            text-decoration: none;
-            position: absolute;
-            right: 8px;
-            bottom: 3px;
-        }
-
-        .deletebtn:hover {
-            color: black;
-            background-color: red; 
-            transform: scale(1.1);
-            transition: transform 0.2s ease-in-out;          
-        }
-
-        form {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-            padding: 16px;
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            margin-top: 16px;
-        }
-
-        form input {
-            padding: 8px;
-            font-size: 16px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            width: 100%;
-        }
-
-        form button {
-            padding: 8px 16px;
-            font-size: 16px;
-            color: white;
-            background-color: navy;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        form button:hover {
-            background-color: blue;
-        }
-
-        .textheader {
-            color: navy;
-        }
-
-    </style>
+    <link rel="stylesheet" href="style.css"> <!-- Verknüpfung externer CSS-Datei -->
 </head>
 <body>
     <div class="menubar">
@@ -277,7 +137,6 @@ $impressum = "Vorname Nachname<br>
 
     <div class="main">
         <div class="menu">
-            <!-- Menüpunkte -->
             <a href="index.php?page=start"><img src="img/home.svg">Start</a>
             <?php if ($isLoggedIn): ?>
                 <a href="index.php?logout=true"><img src="img/logout.svg">Ausloggen</a>
@@ -291,17 +150,8 @@ $impressum = "Vorname Nachname<br>
 
         <div class="content">
         <?php
-            $page = $_GET['page'] ?? 'start'; // Standard-Seite ist Startseite
-            $contacts = [];
-
-            // Kontakte aus der Datei laden
-            if (file_exists('contacts.txt')) {
-                $text = file_get_contents('contacts.txt', true);
-                $contacts = json_decode($text, true);
-            }
-
+            // Seitenlogik basierend auf `$page`
             if ($page === 'login') {
-                // Login-Formular anzeigen
                 echo "<h1>Login</h1>";
                 if (isset($loginError)) {
                     echo "<p style='color: red;'>$loginError</p>";
@@ -312,7 +162,6 @@ $impressum = "Vorname Nachname<br>
                     <input type='password' name='password' placeholder='Passwort eingeben: password' required>
                     <button type='submit'>Einloggen</button>
                 </form>";
-
             } elseif ($page === 'contacts') {
                 echo "<h1>Deine Kontakte</h1>";
                 if (!$isLoggedIn) {
@@ -350,39 +199,14 @@ $impressum = "Vorname Nachname<br>
             } elseif ($page === 'legal') {
                 echo "<h1>Impressum</h1><p>$impressum</p>";
             } else {
-                echo "<h1>Willkommen zu deinem digitalen Kontaktbuch!</h1>
-        <p>Hier kannst du deine Kontakte einfach und übersichtlich verwalten. Die Funktionen umfassen:</p>
-        <ul>
-            <li><b>Startseite:</b> 
-                <ul>
-                    <li>Begrüßung und Erklärung der Funktionen.</li>
-                </ul><br>
-            <li><b>Login/Logout:</b> 
-                <ul>
-                    <li>Einloggen, um auf geschützte Funktionen zuzugreifen.</li>
-                    <li>Nach dem Logout sind alle Rechte entzogen, erneutes Einloggen ist jederzeit möglich.</li>
-                </ul><br>
-            </li>
-            <li><b>Kontakte verwalten:</b> 
-                <ul>
-                    <li><b>Kontakte anzeigen:</b> Einsicht in eine Liste deiner gespeicherten Kontakte.</li>
-                    <li><b>Kontakte hinzufügen:</b> Möglichkeit, neue Kontakte mit Namen und Telefonnummer zu speichern.</li>
-                    <li><b>Kontakte löschen:</b> Entferne Kontakte, die nicht mehr benötigt werden.</li>
-                </ul><br>
-            </li>
-            <li><b>Zugriffsbeschränkung:</b>
-                <ul>
-                    <li>Ohne Login kannst du keine geschützten Funktionen nutzen. Stattdessen erhältst du eine Meldung, dich einzuloggen.</li>
-                </ul><br>
-        </ul>
-        <p>Viel Spaß bei der Nutzung deines digitalen Kontaktbuchs!</p>";
+                echo $startseite;
             }
         ?>
         </div>
     </div>
 
     <div class="footer">
-    <img src="img/copyright.svg"> 2025 Marcus Moser
+        <img src="img/copyright.svg"> 2025 Marcus Moser
     </div>
 </body>
 </html>
