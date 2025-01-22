@@ -131,7 +131,7 @@ $impressum = "Vorname Nachname<br>
     <div class="menubar">
         <h1>Mein Kontakt-Buch</h1>
         <div class="myname">
-            <div class="avatar"><h2>M</h2></div><h3>Marcus Moser</h3>
+            <div class="avatar"><h2>M</h2></div><h3>Marcus</h3>
         </div>
     </div>
 
@@ -206,7 +206,7 @@ $impressum = "Vorname Nachname<br>
     </div>
 
     <div class="footer">
-        <img src="img/copyright.svg"> 2025 Marcus Moser
+        <img src="img/copyright.svg"> 2025 Marcus
     </div>
 </body>
 </html>

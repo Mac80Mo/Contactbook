@@ -64,4 +64,17 @@ Ein einfaches digitales Kontaktbuch, das es ermöglicht, Kontakte zu verwalten. 
 - **JSON**: Speicherung von Kontaktdaten.
 
 ## Lizenz
-Diese Anwendung wurde erstellt von **Marcus Moser** und steht unter keinem speziellen Lizenzmodell. Änderungen sind erlaubt.
+Diese Anwendung wurde erstellt von **Marcus** und steht unter keinem speziellen Lizenzmodell. Änderungen sind erlaubt.
+
+## Ein paar Impressionen
+![Startseite](readme_img/home.png)
+
+![Login](readme_img/login.png)
+
+![Kontaktseite](readme_img/contacts_false.png)
+
+![Kontaktseite](readme_img/contacts_true.png)
+
+![Kontakt hinzufügen](readme_img/add.png)
+
+![Impressum](readme_img/legal.png)
